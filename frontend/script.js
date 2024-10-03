@@ -1,38 +1,53 @@
-document.getElementById('autocomplete-input').addEventListener('input', function() {
-    const prefix = this.value;
+const searchInput = document.getElementById('search');
+const resultsDiv = document.getElementById('results');
 
-    // Clear suggestions if input is empty
-    if (!prefix) {
-        document.getElementById('suggestions').innerHTML = '';
-        document.getElementById('suggestions').style.display = 'none';
+searchInput.addEventListener('input', function() {
+    const query = this.value;
+    if (query.length < 1) {
+        resultsDiv.innerHTML = ''; // Clear results if input is empty
         return;
     }
 
-    // Fetch suggestions from the Flask backend
-    fetch(`http://127.0.0.1:5000/autocomplete?prefix=${prefix}`)
+    fetch(`http://127.0.0.1:5000/autocomplete?prefix=${query}`)
         .then(response => response.json())
         .then(data => {
-            const suggestionsDiv = document.getElementById('suggestions');
-            suggestionsDiv.innerHTML = ''; // Clear previous suggestions
+            resultsDiv.innerHTML = '<h2>Results:</h2>';
 
-            if (data.length === 0) {
-                suggestionsDiv.style.display = 'none'; // Hide if no suggestions
-                return;
+            // Display artist names
+            if (data.names.length > 0) {
+                resultsDiv.innerHTML += '<h3>Artists:</h3><ul>';
+                data.names.forEach(name => {
+                    resultsDiv.innerHTML += `<li>${name}</li>`;  // Correctly inject the name here
+                });
+                resultsDiv.innerHTML += '</ul>';
             }
 
-            // Show suggestions
-            data.forEach(item => {
-                const suggestionDiv = document.createElement('div');
-                suggestionDiv.textContent = item;
-                suggestionDiv.onclick = () => {
-                    document.getElementById('autocomplete-input').value = item; // Set input value
-                    suggestionsDiv.innerHTML = ''; // Clear suggestions
-                    suggestionsDiv.style.display = 'none'; // Hide suggestions
-                };
-                suggestionsDiv.appendChild(suggestionDiv);
-            });
+            // Display album titles
+            if (data.albums.length > 0) {
+                resultsDiv.innerHTML += '<h3>Albums:</h3><ul>';
+                data.albums.forEach(album => {
+                    resultsDiv.innerHTML += `<li>${album}</li>`;  // Correctly inject the album title here
+                });
+                resultsDiv.innerHTML += '</ul>';
+            }
 
-            suggestionsDiv.style.display = 'block'; // Show suggestions
+            // Display song titles
+            if (data.songs.length > 0) {
+                resultsDiv.innerHTML += '<h3>Songs:</h3><ul>';
+                data.songs.forEach(song => {
+                    resultsDiv.innerHTML += `<li>${song}</li>`;  // Correctly inject the song title here
+                });
+                resultsDiv.innerHTML += '</ul>';
+            }
+
+            // If no results found
+            if (data.names.length === 0 && data.albums.length === 0 && data.songs.length === 0) {
+                resultsDiv.innerHTML += '<p>No suggestions found.</p>';
+            }
         })
-        .catch(error => console.error('Error fetching suggestions:', error));
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            resultsDiv.innerHTML = '<p>Error fetching data. Please try again later.</p>';
+        });
 });
+ 
