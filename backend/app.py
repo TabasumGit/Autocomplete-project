@@ -37,5 +37,23 @@ def autocomplete():
 
     return jsonify({'albums': albums, 'songs': songs, 'names': names})
 
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+    results = []
+
+    # Perform your search logic here
+    for artist in data:
+        if artist['name'].lower() == query.lower():
+            results.append({'type': 'artist', 'name': artist['name']})
+        for album in artist['albums']:
+            if album['title'].lower() == query.lower():
+                results.append({'type': 'album', 'title': album['title'], 'artist': artist['name']})
+            for song in album['songs']:
+                if song['title'].lower() == query.lower():
+                    results.append({'type': 'song', 'title': song['title'], 'artist': artist['name']})
+
+    return jsonify({'results': results})
+
 if __name__ == '__main__':
     app.run(debug=True)

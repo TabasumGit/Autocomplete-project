@@ -1,51 +1,48 @@
 
-const inputField = document.getElementById('autocomplete-input');
-const suggestionsContainer = document.getElementById('suggestions');
-const resultsContainer = document.getElementById('results');
+let selectedSuggestion = ''; // Variable to store the selected suggestion
 
-inputField.addEventListener('input', function() {
-    const prefix = inputField.value;
+document.getElementById('autocomplete-input').addEventListener('input', showSuggestions);
 
-    // Clear previous suggestions
-    suggestionsContainer.innerHTML = '';
-    resultsContainer.style.display = 'none'; // Hide results initially
+function showSuggestions() {
+    const input = document.getElementById('autocomplete-input');
+    const suggestionsContainer = document.getElementById('suggestions');
+    const value = input.value;
 
-    if (prefix.length > 0) {
-        fetch(`http://127.0.0.1:5000/autocomplete?prefix=${prefix}`)
+    if (value.length > 0) {
+        fetch(`/autocomplete?prefix=${value}`)
             .then(response => response.json())
             .then(data => {
-                const allSuggestions = [
-                    ...data.names.map(name => ({ text: name, type: 'Artist' })),
-                    ...data.albums.map(album => ({ text: album, type: 'Album' })),
-                    ...data.songs.map(song => ({ text: song, type: 'Song' }))
-                ];
+                suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+                const suggestions = [...data.names, ...data.albums, ...data.songs]; // Combine suggestions
 
-                if (allSuggestions.length > 0) {
-                    allSuggestions.forEach(suggestion => {
-                        const suggestionDiv = document.createElement('div');
-                        suggestionDiv.innerText = `${suggestion.text} (${suggestion.type})`; // Display suggestion type
-                        suggestionDiv.addEventListener('click', () => selectSuggestion(suggestion));
-                        suggestionsContainer.appendChild(suggestionDiv);
-                    });
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.textContent = suggestion;
+                    div.onclick = () => selectSuggestion(suggestion); // Store selected suggestion
+                    suggestionsContainer.appendChild(div);
+                });
 
-                    suggestionsContainer.style.display = 'block'; // Show suggestions
-                } else {
-                    suggestionsContainer.style.display = 'none'; // Hide if no suggestions
-                }
-            });
+                suggestionsContainer.style.display = suggestions.length ? 'block' : 'none'; // Show/hide suggestions
+            })
+            .catch(err => console.error('Error fetching suggestions:', err));
     } else {
         suggestionsContainer.style.display = 'none'; // Hide suggestions if input is empty
     }
-});
+}
 
+// Store the selected suggestion
 function selectSuggestion(suggestion) {
-    inputField.value = suggestion.text; // Set the input to the selected suggestion
-    suggestionsContainer.style.display = 'none'; // Hide suggestions
-    displayResultType(suggestion); // Display the result type
+    selectedSuggestion = suggestion; // Store selected value
+    document.getElementById('autocomplete-input').value = suggestion; // Update input field
+    document.getElementById('suggestions').style.display = 'none'; // Hide suggestions
 }
 
-function displayResultType(suggestion) {
-    resultsContainer.innerHTML = `Selected: ${suggestion.text} (${suggestion.type})`; // Display the selected suggestion with type
-    resultsContainer.style.display = 'block'; // Show results
+// Redirect to search results page when the search button is clicked
+function searchFunction() {
+    if (selectedSuggestion) {
+        const searchQuery = encodeURIComponent(selectedSuggestion); // Encode the selected value for URL
+        window.location.href = `searchresult.html?query=${searchQuery}`; // Redirect to search results page
+    } else {
+        alert('Please select a suggestion before searching.');
+    }
 }
-

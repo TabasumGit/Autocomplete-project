@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .result-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .artist {
+            background-color: #e3f2fd; /* Light blue */
+            color: #1e88e5; /* Blue text */
+        }
+
+        .album {
+            background-color: #e8f5e9; /* Light green */
+            color: #388e3c; /* Green text */
+        }
+
+        .song {
+            background-color: #fff3e0; /* Light orange */
+            color: #fb8c00; /* Orange text */
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Results</h1>
+    <div id="results"></div> <!-- Where results will be displayed -->
+    
+    <script>
+        // Get query parameter from URL
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get('query');
+
+        // Fetch results based on query
+        fetch(`/search?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                if (data.results.length > 0) {
+                    data.results.forEach(item => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item', item.type); // Add class based on type
+                        resultItem.textContent = `${item.type.charAt(0).toUpperCase() + item.type.slice(1)}: ${item.title || item.name} ${item.artist ? 'by ' + item.artist : ''}`;
+                        resultsDiv.appendChild(resultItem);
+                    });
+                } else {
+                    resultsDiv.textContent = 'No results found.';
+                }
+            })
+            .catch(err => console.error('Error fetching results:', err));
+    </script>
+</body>
+</html>
