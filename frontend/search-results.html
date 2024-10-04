@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add your styles for the results page */
+    </style>
+</head>
+<body>
+    <h1>Search Results</h1>
+    <div id="results"></div> <!-- Results will be displayed here -->
+
+    <script>
+        // Function to extract the query parameter and display results
+        function displayResults() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('query');
+
+            // Here you can implement the logic to fetch and display the results
+            // For demonstration, we'll just show the query
+            document.getElementById('results').innerText = `You searched for: ${query}`;
+        }
+
+        // Call the function to display results when the page loads
+        displayResults();
+    </script>
+</body>
+</html>
