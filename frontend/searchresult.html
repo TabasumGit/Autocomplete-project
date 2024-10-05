@@ -8,6 +8,7 @@
         body {
             font-family: 'Arial', sans-serif;
             padding: 20px;
+            background-color: aqua;
         }
 
         h1 {
@@ -20,6 +21,9 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            width: 150px;
+            text-align: center;
+            margin-left: 45%;
         }
 
         .result-item:hover {
@@ -40,11 +44,36 @@
             background-color: #fff3e0; /* Light orange */
             color: #fb8c00; /* Orange text */
         }
+
+        .search-text {
+            text-align: center;
+        }
+
+        #exit-button {
+            position: fixed; /* Fix position at the bottom */
+            bottom: 20px; /* Distance from the bottom */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center alignment */
+            background-color: #d9534f; /* Background color */
+            color: white; /* Text color */
+            border: none; /* No border */
+            padding: 10px 20px; /* Padding */
+            font-size: 20px; /* Font size */
+            cursor: pointer; /* Pointer cursor on hover */
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        #exit-button:hover {
+            background-color: #c9302c; /* Darker red on hover */
+        }
+        
     </style>
 </head>
 <body>
-    <h1>Search Results</h1>
-    <div id="results"></div> <!-- Where results will be displayed -->
+    <h1 class="search-text">Searched Results</h1>
+    <div id="results" class="searched-result"></div> <!-- Where results will be displayed -->
+
+    <button id="exit-button" onclick="hideResults()">✖</button> <!-- Exit button at the bottom -->
     
     <script>
         // Get query parameter from URL
@@ -52,7 +81,7 @@
         const query = params.get('query');
 
         // Fetch results based on query
-        fetch(`/search?query=${encodeURIComponent(query)}`)
+        fetch(`/searchresult?query=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 const resultsDiv = document.getElementById('results');
@@ -68,6 +97,12 @@
                 }
             })
             .catch(err => console.error('Error fetching results:', err));
+
+            function hideResults() {
+                window.location.href = '/';  // Redirect to the homepage or another URL
+            }
+
     </script>
 </body>
 </html>
+

@@ -37,8 +37,8 @@ def autocomplete():
 
     return jsonify({'albums': albums, 'songs': songs, 'names': names})
 
-@app.route('/search', methods=['GET'])
-def search():
+@app.route('/searchresult', methods=['GET'])
+def search_results_page():
     query = request.args.get('query', '')
     results = []
 
