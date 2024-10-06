@@ -32,4 +32,5 @@ This project is designed to implement an autocomplete component that provides su
 
   Start the Frontend:
   python -m http.server 
-  
+
+   Application Url: http://127.0.0.1:5000/
