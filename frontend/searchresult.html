@@ -66,11 +66,18 @@
         #exit-button:hover {
             background-color: #c9302c; /* Darker red on hover */
         }
-        
+
+        img {
+            width: 100px; /* Set image width */
+            border-radius: 5px; /* Optional styling */
+            margin-bottom: 5px; /* Space between image and text */
+        }
     </style>
 </head>
 <body>
     <h1 class="search-text">Searched Results</h1>
+    <!-- <img src="./images/Portishead.jpg"> -->
+
     <div id="results" class="searched-result"></div> <!-- Where results will be displayed -->
 
     <button id="exit-button" onclick="hideResults()">✖</button> <!-- Exit button at the bottom -->
@@ -87,9 +94,19 @@
                 const resultsDiv = document.getElementById('results');
                 if (data.results.length > 0) {
                     data.results.forEach(item => {
+                        console.log('Image URL:', item.image); // Log the image URL
                         const resultItem = document.createElement('div');
                         resultItem.classList.add('result-item', item.type); // Add class based on type
                         resultItem.textContent = `${item.type.charAt(0).toUpperCase() + item.type.slice(1)}: ${item.title || item.name} ${item.artist ? 'by ' + item.artist : ''}`;
+                        // Create image element for artist
+                        if (item.type === 'artist') {
+                            const img = document.createElement('img');
+                            img.src = item.image; // Set image source
+                            img.alt = `${item.name} image`;
+                            resultItem.appendChild(img); // Append image to result item
+                        }
+
+                        
                         resultsDiv.appendChild(resultItem);
                     });
                 } else {
@@ -98,11 +115,10 @@
             })
             .catch(err => console.error('Error fetching results:', err));
 
-            function hideResults() {
-                window.location.href = '/';  // Redirect to the homepage or another URL
-            }
-
+        function hideResults() {
+            const resultsDiv = document.getElementById('results');
+            window.location.href = '/';  // Redirect to the homepage or another URL
+        }
     </script>
 </body>
 </html>
-

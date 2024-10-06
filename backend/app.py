@@ -2,9 +2,18 @@ from flask import Flask, request, jsonify, send_from_directory
 import json
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder='../frontend', static_url_path='')  # Static folder set to frontend
+app = Flask(__name__, static_folder='../frontend', static_url_path='')  # Set the static folder
 CORS(app)
 data_file = 'data.json'
+
+# Mapping artist names to their image URLs
+artist_images = {
+    "Rammstein": "/images/Rammstein.jpg",  # Path to the image from the frontend folder
+    "Portishead": "/images/Portishead.jpg",
+    "Taylor_swift":"/images/Taylor_Swift.jpg",
+    "radiohead":"/images/radiohead.jpg"
+    # Add other artists and their images here
+}
 
 # Load the JSON data from a file
 try:
@@ -15,7 +24,7 @@ except json.JSONDecodeError as e:
 
 @app.route('/')
 def home():
-    return send_from_directory('../frontend', 'index.html')  # Serve index.html directly
+    return send_from_directory('../frontend', 'index.html')
 
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
@@ -24,7 +33,6 @@ def autocomplete():
     songs = []
     names = []
 
-    # Search for albums and songs matching the prefix
     for artist in data:
         if artist['name'].lower().startswith(prefix):
             names.append(artist['name'])
@@ -42,16 +50,27 @@ def search_results_page():
     query = request.args.get('query', '')
     results = []
 
-    # Perform your search logic here
     for artist in data:
         if artist['name'].lower() == query.lower():
-            results.append({'type': 'artist', 'name': artist['name']})
+            results.append({
+                'type': 'artist',
+                'name': artist['name'],
+                'image': artist_images.get(artist['name'])  # Get image path
+            })
         for album in artist['albums']:
             if album['title'].lower() == query.lower():
-                results.append({'type': 'album', 'title': album['title'], 'artist': artist['name']})
+                results.append({
+                    'type': 'album',
+                    'title': album['title'],
+                    'artist': artist['name']
+                })
             for song in album['songs']:
                 if song['title'].lower() == query.lower():
-                    results.append({'type': 'song', 'title': song['title'], 'artist': artist['name']})
+                    results.append({
+                        'type': 'song',
+                        'title': song['title'],
+                        'artist': artist['name']
+                    })
 
     return jsonify({'results': results})
 
