@@ -34,3 +34,4 @@ This project is designed to implement an autocomplete component that provides su
   python -m http.server 
 
    Application Url: http://127.0.0.1:5000/
+   Video: https://drive.google.com/file/d/1Va2w66X8mxBiTs0zhfVty1YRpiUAua4d/view?usp=sharing
